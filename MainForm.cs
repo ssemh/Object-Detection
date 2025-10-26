@@ -20,11 +20,9 @@ namespace ObjectDetection
         private Button stopButton;
         private ComboBox cameraComboBox;
         private Label statusLabel;
-        private CheckBox advancedDetectionCheckBox;
-        private CheckBox featureDetectionCheckBox;
-        private CheckBox trackingCheckBox;
-        private CheckBox gpuAccelerationCheckBox;
         private Label fpsLabel;
+        private Panel infoPanel;
+        private Label titleLabel;
         private int frameCount = 0;
         private DateTime lastFpsUpdate = DateTime.Now;
 
@@ -37,128 +35,133 @@ namespace ObjectDetection
 
         private void InitializeComponent()
         {
-            this.Text = "Gelişmiş Nesne Tanıma Sistemi";
-            this.Size = new DrawingSize(1000, 700);
+            this.Text = "Nesne Tanıma Sistemi";
+            this.Size = new DrawingSize(800, 650);
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.BackColor = Color.FromArgb(240, 240, 240);
 
-            // Ana görüntü alanı
+            // Başlık etiketi
+            titleLabel = new Label
+            {
+                Text = "Kamera Nesne Tanıma",
+                Location = new DrawingPoint(20, 20),
+                Size = new DrawingSize(760, 40),
+                Font = new Font("Segoe UI", 20, FontStyle.Bold),
+                ForeColor = Color.FromArgb(52, 73, 94),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+
+            // Ana görüntü alanı - daha büyük ve merkezi
             pictureBox = new PictureBox
             {
-                Size = new DrawingSize(640, 480),
-                Location = new DrawingPoint(10, 10),
+                Size = new DrawingSize(760, 400),
+                Location = new DrawingPoint(20, 70),
                 BorderStyle = BorderStyle.FixedSingle,
-                SizeMode = PictureBoxSizeMode.Zoom
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BackColor = Color.Black
+            };
+
+            // Bilgi paneli - arka plan rengi ile
+            infoPanel = new Panel
+            {
+                Location = new DrawingPoint(20, 480),
+                Size = new DrawingSize(760, 120),
+                BackColor = Color.FromArgb(255, 255, 255),
+                BorderStyle = BorderStyle.FixedSingle
             };
 
             // Kamera seçimi
-            cameraComboBox = new ComboBox
+            var cameraLabel = new Label
             {
-                Location = new DrawingPoint(10, 500),
-                Size = new DrawingSize(150, 25),
-                DropDownStyle = ComboBoxStyle.DropDownList
+                Text = "Kamera:",
+                Location = new DrawingPoint(20, 20),
+                Size = new DrawingSize(80, 25),
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(52, 73, 94)
             };
 
-            // Kontrol butonları
+            cameraComboBox = new ComboBox
+            {
+                Location = new DrawingPoint(100, 20),
+                Size = new DrawingSize(180, 28),
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 10)
+            };
+
+            // Kontrol butonları - daha büyük ve renkli
             startButton = new Button
             {
-                Text = "Başlat",
-                Location = new DrawingPoint(170, 500),
-                Size = new DrawingSize(80, 25)
+                Text = "▶ Başlat",
+                Location = new DrawingPoint(300, 20),
+                Size = new DrawingSize(120, 35),
+                BackColor = Color.FromArgb(46, 204, 113),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                UseVisualStyleBackColor = false
             };
+            startButton.FlatAppearance.BorderSize = 0;
             startButton.Click += StartButton_Click;
 
             stopButton = new Button
             {
-                Text = "Durdur",
-                Location = new DrawingPoint(260, 500),
-                Size = new DrawingSize(80, 25),
-                Enabled = false
+                Text = "■ Durdur",
+                Location = new DrawingPoint(440, 20),
+                Size = new DrawingSize(120, 35),
+                Enabled = false,
+                BackColor = Color.FromArgb(231, 76, 60),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                UseVisualStyleBackColor = false
             };
+            stopButton.FlatAppearance.BorderSize = 0;
             stopButton.Click += StopButton_Click;
 
-
-            // Durum ve FPS etiketleri
+            // Durum etiketi
             statusLabel = new Label
             {
-                Text = "Hazır",
-                Location = new DrawingPoint(10, 530),
-                Size = new DrawingSize(200, 20)
+                Text = "📹 Durum: Hazır",
+                Location = new DrawingPoint(20, 70),
+                Size = new DrawingSize(350, 30),
+                Font = new Font("Segoe UI", 11),
+                ForeColor = Color.FromArgb(46, 204, 113)
             };
 
+            // FPS etiketi
             fpsLabel = new Label
             {
-                Text = "FPS: 0",
-                Location = new DrawingPoint(220, 530),
-                Size = new DrawingSize(100, 20)
+                Text = "⚡ FPS: 0",
+                Location = new DrawingPoint(390, 70),
+                Size = new DrawingSize(200, 30),
+                Font = new Font("Segoe UI", 11),
+                ForeColor = Color.FromArgb(52, 152, 219)
             };
 
-            // Gelişmiş özellik kontrolleri
-            advancedDetectionCheckBox = new CheckBox
-            {
-                Text = "Gelişmiş Tespit (YOLO)",
-                Location = new DrawingPoint(670, 20),
-                Size = new DrawingSize(200, 20),
-                Checked = false
-            };
-            advancedDetectionCheckBox.CheckedChanged += AdvancedDetectionCheckBox_CheckedChanged;
-
-            featureDetectionCheckBox = new CheckBox
-            {
-                Text = "Özellik Tespiti (SIFT/ORB)",
-                Location = new DrawingPoint(670, 50),
-                Size = new DrawingSize(200, 20),
-                Checked = false
-            };
-            featureDetectionCheckBox.CheckedChanged += FeatureDetectionCheckBox_CheckedChanged;
-
-            trackingCheckBox = new CheckBox
-            {
-                Text = "Nesne Takibi",
-                Location = new DrawingPoint(670, 80),
-                Size = new DrawingSize(200, 20),
-                Checked = false
-            };
-            trackingCheckBox.CheckedChanged += TrackingCheckBox_CheckedChanged;
-
-            gpuAccelerationCheckBox = new CheckBox
-            {
-                Text = "GPU Hızlandırma",
-                Location = new DrawingPoint(670, 110),
-                Size = new DrawingSize(200, 20),
-                Checked = false
-            };
-            gpuAccelerationCheckBox.CheckedChanged += GpuAccelerationCheckBox_CheckedChanged;
-
-            // Bilgi paneli
-            var infoLabel = new Label
-            {
-                Text = "Gelişmiş Özellikler:",
-                Location = new DrawingPoint(670, 140),
-                Size = new DrawingSize(200, 20),
-                Font = new Font("Arial", 10, FontStyle.Bold)
-            };
-
+            // Bilgi metni
             var infoText = new Label
             {
-                Text = "• YOLO: 80 farklı nesne sınıfı\n• SIFT/ORB: Özellik noktaları\n• Takip: Kalman Filter\n• GPU: CUDA desteği",
-                Location = new DrawingPoint(670, 160),
-                Size = new DrawingSize(300, 100),
-                Font = new Font("Arial", 8)
+                Text = "💡 Kamera ile gerçek zamanlı nesne tespiti\n" +
+                       "   Yüz, insan ve renkli nesneler otomatik algılanır",
+                Location = new DrawingPoint(20, 105),
+                Size = new DrawingSize(700, 50),
+                Font = new Font("Segoe UI", 9),
+                ForeColor = Color.FromArgb(127, 140, 141)
             };
 
+            // Panel içine kontrolleri ekle
+            infoPanel.Controls.Add(cameraLabel);
+            infoPanel.Controls.Add(cameraComboBox);
+            infoPanel.Controls.Add(startButton);
+            infoPanel.Controls.Add(stopButton);
+            infoPanel.Controls.Add(statusLabel);
+            infoPanel.Controls.Add(fpsLabel);
+            infoPanel.Controls.Add(infoText);
+
             // Tüm kontrolleri forma ekle
+            this.Controls.Add(titleLabel);
             this.Controls.Add(pictureBox);
-            this.Controls.Add(cameraComboBox);
-            this.Controls.Add(startButton);
-            this.Controls.Add(stopButton);
-            this.Controls.Add(statusLabel);
-            this.Controls.Add(fpsLabel);
-            this.Controls.Add(advancedDetectionCheckBox);
-            this.Controls.Add(featureDetectionCheckBox);
-            this.Controls.Add(trackingCheckBox);
-            this.Controls.Add(gpuAccelerationCheckBox);
-            this.Controls.Add(infoLabel);
-            this.Controls.Add(infoText);
+            this.Controls.Add(infoPanel);
 
             // Timer ayarları
             var timer = new DrawingTimer
@@ -194,7 +197,8 @@ namespace ObjectDetection
                 isCapturing = true;
                 startButton.Enabled = false;
                 stopButton.Enabled = true;
-                statusLabel.Text = "Kamera aktif";
+                statusLabel.Text = "📹 Durum: Kamera aktif";
+                statusLabel.ForeColor = Color.FromArgb(46, 204, 113);
             }
             catch (Exception ex)
             {
@@ -208,7 +212,8 @@ namespace ObjectDetection
             capture?.Release();
             startButton.Enabled = true;
             stopButton.Enabled = false;
-            statusLabel.Text = "Durduruldu";
+            statusLabel.Text = "📹 Durum: Durduruldu";
+            statusLabel.ForeColor = Color.FromArgb(231, 76, 60);
             
             if (pictureBox.Image != null)
             {
@@ -239,7 +244,7 @@ namespace ObjectDetection
                     if ((now - lastFpsUpdate).TotalSeconds >= 1.0)
                     {
                         var fps = frameCount / (now - lastFpsUpdate).TotalSeconds;
-                        fpsLabel.Text = $"FPS: {fps:F1}";
+                        fpsLabel.Text = $"⚡ FPS: {fps:F1}";
                         frameCount = 0;
                         lastFpsUpdate = now;
                     }
@@ -247,42 +252,10 @@ namespace ObjectDetection
             }
             catch (Exception ex)
             {
-                statusLabel.Text = $"Hata: {ex.Message}";
+                statusLabel.Text = $"⚠️ Hata: {ex.Message}";
+                statusLabel.ForeColor = Color.FromArgb(231, 76, 60);
             }
         }
-
-        // Event handler metodları
-        private void AdvancedDetectionCheckBox_CheckedChanged(object? sender, EventArgs e)
-        {
-            detector.SetAdvancedDetection(advancedDetectionCheckBox.Checked);
-            if (advancedDetectionCheckBox.Checked && !detector.IsAdvancedDetectionAvailable())
-            {
-                MessageBox.Show("YOLO modeli bulunamadı! Temel tespit yöntemleri kullanılacak.", "Uyarı", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                advancedDetectionCheckBox.Checked = false;
-            }
-        }
-
-        private void FeatureDetectionCheckBox_CheckedChanged(object? sender, EventArgs e)
-        {
-            detector.SetFeatureDetection(featureDetectionCheckBox.Checked);
-        }
-
-        private void TrackingCheckBox_CheckedChanged(object? sender, EventArgs e)
-        {
-            detector.SetTracking(trackingCheckBox.Checked);
-        }
-
-        private void GpuAccelerationCheckBox_CheckedChanged(object? sender, EventArgs e)
-        {
-            if (gpuAccelerationCheckBox.Checked)
-            {
-                detector.EnableGPUAcceleration();
-                MessageBox.Show("GPU hızlandırma etkinleştirildi.", "Bilgi", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
